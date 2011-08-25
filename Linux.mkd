@@ -1,0 +1,19 @@
+Linux
+=====
+
+You may need to run `sudo libhid-detach-device 1523:0300` (found in the `libhid0` package on Ubuntu) if something (like an X joystick driver) captures hid devices.
+
+DMESG Excerpt
+-------------
+Ubuntu 10.04 x64
+
+```
+[667604.360050] usb 4-2: new full speed USB device using uhci_hcd and address 3
+[667604.536054] usb 4-2: configuration #1 chosen from 1 choice
+[667604.542021] input: Razer Razer Hydra as /devices/pci0000:00/0000:00:1a.1/usb4/4-2/4-2:1.0/input/input50
+[667604.542107] generic-usb 0003:1532:0300.002F: input,hidraw3: USB HID v1.11 Device [Razer Razer Hydra] on usb-0000:00:1a.1-2/input0
+[667604.546025] input: Razer Razer Hydra as /devices/pci0000:00/0000:00:1a.1/usb4/4-2/4-2:1.1/input/input51
+[667604.546141] generic-usb 0003:1532:0300.0030: input,hidraw4: USB HID v1.11 Gamepad [Razer Razer Hydra] on usb-0000:00:1a.1-2/input1
+```
+
+See `lsusb.txt` for `lsusb -vvv` information.
