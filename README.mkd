@@ -1,0 +1,69 @@
+Razer Hydra HID Protocol Investigation
+======================================
+
+Goal
+----
+Understand how the Razer Hydra communicates over USB HID to allow drivers/applications to interact with it on any platform, including those not supported by the Sixense SDK. One particular concrete goal is the creation of a tracker driver for VRPN to make use of the Hydra.
+
+Constraint
+----------
+Gain this knowledge only by interacting with the device and recording data, not through disassembly of Sixense code. A [proprietary, Windows-only SDK is available][sdksteam] through Steam but we will _not_ be using that in this project, so that we can create "clean" information.
+
+Subject
+-------
+The [Razer Hydra][hydra] is a 6DoF wired magnetic tracker with two sensors, each with gamepad-type controls, designed for use with computer games. The motion sensing technology was developed by [Sixense][sixense] ([forum][sforum]), and was formerly referred to as Sixense TrueMotion.
+
+
+[hydra]:http://www.razerzone.com/minisite/hydra/
+[sixense]:http://sixense.com/
+[sforum]:http://sixense.com/forum/phpBB3/index.php
+[sdksteam]:http://sixense.com/?page_id=21
+
+Known so far
+------------
+- Vendor ID: 0x1532 hex aka 7426 decimal
+- Product ID: 0x0300 hex aka 768 decimal
+
+- Appears as a composite USB device with two interfaces:
+  - Interface 0 appears as a generic USB HID device - this is the one with the motion data.
+  - Interface 1 appears as a standard HID gamepad, allowing access to the buttons.
+
+- Seems to have two "modes" - gamepad mode and motion control mode. They are set by the Hydra Configurator on Windows, and enables/disabled the "gamepad" device.
+  - When in gamepad mode, smaller input reports are sent. (12 bytes?)
+  - When in motion mode, input reports of 52 bytes are sent.
+  - Seems to default to gamepad mode when plugged into a machine without the Hydra software.
+  - There are some 90-byte feature reports being exchanged (set/get) that are not yet understood.
+
+- Connecting the Hydra to a Windows virtual machine running the Hydra software, then disconnecting it from the VM (leaving it connected to the Linux host) leaves it in the "52-byte report" mode.
+
+Other links
+-----------
+- [Start of work on VRPN driver](https://github.com/rpavlik/vrpn/tree/razer-hydra)
+- [Thread on VRPN mailing list about investigating the Hydra](http://lists.unc.edu/read/messages?id=5988423)
+- <http://www.mtbs3d.com/phpBB/viewtopic.php?f=120&t=12450>
+
+Tools and Resources
+-------------------
+- [Wireshark](http://wireshark.org): Open-source capture tool, usually for networks, but can also capture USB traffic on Linux. By running Windows in a virtual machine on Linux, it can capture Windows USB traffic as well: <http://wiki.wireshark.org/CaptureSetup/USB>
+
+- ["ETW in the Windows 7 USB core stack" article](http://blogs.msdn.com/b/usbcoreblog/archive/2009/12/04/etw-in-the-windows-7-usb-core-stack.aspx) - a blog post on how to use built-in tools on Windows 7 to perform USB logging - not sure how useful this is yet. More information here: <http://msdn.microsoft.com/en-us/windows/hardware/gg463163>
+
+- [Updated version of SnoopyPro](http://libusb.6.n5.nabble.com/32-amp-64-bit-version-of-SnoopyPro-td3270266.html) (Open-source USB snooping tool for Windows) - not perfect, but sometimes works
+
+- [USBlyzer](http://www.usblyzer.com/) - proprietary and commercial product, with a 33-day fully-functional free trial and offering a 40% academic discount upon request. Works much easier than SnoopyPro.
+
+- [VRPN](http://www.vrpn.org/) - Accesses HID on Windows, Mac, Linux using hidapi - modifying the app `server_src/vrpn_HID_device_watcher` is a good way to test decoding input reports.
+
+- [HIDAPI](http://www.signal11.us/oss/hidapi/) ([HIDAPI github page](https://github.com/signal11/hidapi)) - Library used by VRPN for cross-platform HID access. Contains a test GUI (depends on the FOX toolkit) for trying communication.
+
+About
+-----
+This GitHub project, with its canonical homepage at <https://github.com/rpavlik/razer-hydra-hid-protocol> , is intended to collect materials to study and the findings that result from them. You are welcome and encouraged to fork this repository, add your findings, and send pull requests.
+
+
+Investigation started by:
+> Ryan Pavlik<br/>
+> <rpavlik@iastate.edu> and <abiryan@ryand.net><br/>
+> <http://academic.cleardefinition.com/><br/>
+> Iowa State University Virtual Reality Applications Center<br/>
+> Human-Computer Interaction Graduate Program<br/>
