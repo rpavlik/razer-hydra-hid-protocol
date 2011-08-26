@@ -21,7 +21,7 @@ The [Razer Hydra][hydra] is a 6DoF wired magnetic tracker with two sensors, each
 
 Known so far
 ------------
-- Vendor ID: 0x1532 hex aka 7426 decimal
+- Vendor ID: 0x1532 hex aka 5426 decimal
 - Product ID: 0x0300 hex aka 768 decimal
 
 - Appears as a composite USB device with two interfaces:
